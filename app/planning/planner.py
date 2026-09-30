@@ -54,37 +54,37 @@ def _target_count(req: PlanRequest) -> int:
 
 
 def _choose_meals(req: PlanRequest) -> list[Recipe]:
-    """Anchors first, then fill toward the weekly target from matching recipes,
-    repeating recipes if needed. A budget stops filling once it's reached."""
-    target = _target_count(req)
-    budget = req.budget if req.budget and req.budget > 0 else None
-    chosen: list[Recipe] = []
-    running = 0.0
+    """The plan is the meals the user selected.
 
-    # Anchor meals are always honored (even if they exceed the budget).
+    - If any anchor meals are selected, the plan is exactly those (distinct,
+      no auto-fill, no repeats) — we never add meals the user didn't pick.
+    - If NO anchors are selected, suggest a week: distinct meals from the
+      chosen cuisines/diet, up to the weekly target and within any budget.
+    """
+    # Selected anchors define the plan.
+    chosen: list[Recipe] = []
+    seen: set[str] = set()
     for mid in req.anchor_meal_ids or []:
         recipe = RECIPES_BY_ID.get(mid)
-        if recipe:
+        if recipe and recipe.id not in seen:
             chosen.append(recipe)
-            running += _recipe_cost(recipe)
+            seen.add(recipe.id)
+    if chosen:
+        return chosen
 
-    pool = filter_recipes(req.cuisines, req.diet)
-    if not pool:
-        return chosen[:target]
-
-    i = 0
-    while len(chosen) < target:
-        recipe = pool[i % len(pool)]
-        i += 1
+    # No anchors: suggest a distinct week from the matching pool.
+    target = _target_count(req)
+    budget = req.budget if req.budget and req.budget > 0 else None
+    running = 0.0
+    for recipe in filter_recipes(req.cuisines, req.diet):
+        if len(chosen) >= target:
+            break
         cost = _recipe_cost(recipe)
-        if budget is not None and running + cost > budget and chosen:
+        if budget is not None and chosen and running + cost > budget:
             break  # next meal would blow the budget
         chosen.append(recipe)
         running += cost
-        if i > target * 4:  # safety against a tiny/empty pool
-            break
-
-    return chosen[:target]
+    return chosen
 
 
 def generate_plan(req: PlanRequest) -> dict:

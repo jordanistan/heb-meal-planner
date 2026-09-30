@@ -430,14 +430,38 @@ select {
   font-weight: 600;
 }
 
+.planHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 .mealList {
   list-style: none;
   padding: 0;
   margin: 8px 0 0;
 }
 .mealList li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   padding: 8px 0;
   border-bottom: 1px solid var(--line);
+}
+.removeMeal {
+  border: none;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 4px 6px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+.removeMeal:hover {
+  color: var(--heb-red);
+  background: var(--accent-tint);
 }
 .tag,
 .brand {

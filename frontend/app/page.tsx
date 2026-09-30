@@ -158,7 +158,7 @@ export default function Home() {
     }
   }
 
-  async function generate() {
+  async function postPlan(anchorIds: string[] | null) {
     setLoading(true);
     setError(null);
     try {
@@ -172,7 +172,7 @@ export default function Home() {
           budget: budget ? Number(budget) : null,
           fulfillment,
           cuisines: cuisines.size ? Array.from(cuisines) : null,
-          anchor_meal_ids: anchors.size ? Array.from(anchors) : null,
+          anchor_meal_ids: anchorIds,
         }),
       });
       if (!res.ok) {
@@ -185,6 +185,26 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
+  }
+
+  function generate() {
+    postPlan(anchors.size ? Array.from(anchors) : null);
+  }
+
+  function clearPlan() {
+    setPlan(null);
+    setError(null);
+  }
+
+  function removeMeal(id: string) {
+    if (!plan) return;
+    const remaining = plan.meals.filter((m) => m.id !== id).map((m) => m.id);
+    if (remaining.length === 0) {
+      clearPlan();
+      return;
+    }
+    // Regenerate the consolidated list from the meals that remain.
+    postPlan(remaining);
   }
 
   const byDepartment = useMemo(() => {
@@ -311,6 +331,11 @@ export default function Home() {
               ? `Showing popular starters — pick a cuisine or search to see all ${recipes.length} meals. Tap a card to read the recipe.`
               : `${visibleRecipes.length} meals — tap a card to read the recipe.`}
           </p>
+          <p className="hint">
+            {anchors.size > 0
+              ? `Your ${anchors.size} selected meal${anchors.size > 1 ? "s" : ""} will be the plan.`
+              : "Select meals to build your plan, or leave empty and we'll suggest a week from your cuisines."}
+          </p>
 
           <input
             className="mealSearch"
@@ -360,7 +385,14 @@ export default function Home() {
         </section>
 
         <section className="card">
-          <h2>This week&apos;s plan</h2>
+          <div className="planHead">
+            <h2>This week&apos;s plan</h2>
+            {plan && (
+              <button type="button" className="clear" onClick={clearPlan}>
+                clear plan
+              </button>
+            )}
+          </div>
           {!plan && <p className="muted">Your plan and shopping list will appear here.</p>}
 
           {plan && (
@@ -396,8 +428,19 @@ export default function Home() {
               <ul className="mealList">
                 {plan.meals.map((m) => (
                   <li key={m.id}>
-                    {m.name} <span className="tag">{m.cuisine}</span>
-                    {m.count > 1 && <span className="times">×{m.count}</span>}
+                    <span>
+                      {m.name} <span className="tag">{m.cuisine}</span>
+                      {m.count > 1 && <span className="times">×{m.count}</span>}
+                    </span>
+                    <button
+                      type="button"
+                      className="removeMeal"
+                      onClick={() => removeMeal(m.id)}
+                      aria-label={`Remove ${m.name}`}
+                      title="Remove from plan"
+                    >
+                      ✕
+                    </button>
                   </li>
                 ))}
               </ul>
