@@ -44,17 +44,24 @@ DATE=$(date -u +%Y-%m-%d)
 # Security grade tracks the live alert count.
 if [ "$OPEN_ALERTS" = "0" ]; then SEC_GRADE="A"; SEC_NOTE="0 open Dependabot alerts"; else SEC_GRADE="C"; SEC_NOTE="$OPEN_ALERTS open Dependabot alert(s) — review"; fi
 
+# CI grade tracks whether a GitHub Actions workflow exists.
+if ls .github/workflows/*.yml >/dev/null 2>&1; then
+  CI_GRADE="A"; CI_NOTE="pytest + frontend/docker build on push & PR (GitHub Actions)"; OVERALL="A"
+else
+  CI_GRADE="C"; CI_NOTE="No automated pipeline yet (tests/build run locally)"; OVERALL="A−"
+fi
+
 echo "→ Writing .github/REPORT_CARD.md…"
 cat > .github/REPORT_CARD.md <<EOF
 # 📋 Project Report Card — HEB Meal Planner
 
 _Generated $DATE from commit \`$COMMIT\`. Regenerate with \`./scripts/gen-sbom-report.sh\`._
 
-## Overall: **A−**
+## Overall: **$OVERALL**
 
-A clean, containerized full-stack MVP with a live site, current dependencies,
-and no open security alerts. Main gap: no automated CI pipeline or coverage
-gate yet.
+A clean, containerized full-stack MVP with a live site, CI on every push,
+current dependencies, and no open security alerts. Remaining polish: a
+test-coverage gate and end-to-end tests.
 
 ## Grades
 
@@ -66,7 +73,7 @@ gate yet.
 | 🐳 Packaging | A | Docker Compose (api + web + Postgres) and k8s manifests (HPA, CronJob) |
 | 📚 Documentation | A | README, CLAUDE.md, GitHub Pages site, this report + SBOM |
 | ⚖️ Licensing | A | MIT |
-| 🤖 CI/CD | C | No automated pipeline yet (tests/build run locally) |
+| 🤖 CI/CD | $CI_GRADE | $CI_NOTE |
 
 ## Metrics
 
@@ -88,9 +95,9 @@ gate yet.
 
 ## Recommended next steps
 
-1. Add a GitHub Actions workflow to run \`pytest\` + \`docker build\` on every PR.
-2. Add test coverage reporting and a minimum threshold.
-3. Commit a \`package-lock.json\` so the SBOM captures transitive npm deps.
+1. Add test-coverage reporting and a minimum threshold to CI.
+2. Add end-to-end tests for the plan → shopping-list flow.
+3. Build the pro-tier assisted cart-fill (Claude browser extension).
 EOF
 
 echo "✓ Wrote .github/sbom.spdx.json ($PKGS components) and .github/REPORT_CARD.md"

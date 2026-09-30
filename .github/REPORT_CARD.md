@@ -1,36 +1,36 @@
 # 📋 Project Report Card — HEB Meal Planner
 
-_Generated 2026-09-30 from commit `936a2fa`. Regenerate with `./scripts/gen-sbom-report.sh`._
+_Generated 2026-09-30 from commit `c813b44`. Regenerate with `./scripts/gen-sbom-report.sh`._
 
-## Overall: **A−**
+## Overall: **A**
 
-A clean, containerized full-stack MVP with a live site, current dependencies,
-and no open security alerts. Main gap: no automated CI pipeline or coverage
-gate yet.
+A clean, containerized full-stack MVP with a live site, CI on every push,
+current dependencies, and no open security alerts. Remaining polish: a
+test-coverage gate and end-to-end tests.
 
 ## Grades
 
 | Area | Grade | Notes |
 |------|:-----:|-------|
 | 🔐 Security | A | 0 open Dependabot alerts; Next.js on a patched release |
-| 🧪 Tests | B+ | 15 passed in 0.78s; unit + API coverage, no e2e/coverage gate yet |
+| 🧪 Tests | B+ | 15 passed in 1.09s; unit + API coverage, no e2e/coverage gate yet |
 | 📦 Dependencies | A | 9 Python + 3 npm direct deps, pinned; SBOM tracked |
 | 🐳 Packaging | A | Docker Compose (api + web + Postgres) and k8s manifests (HPA, CronJob) |
 | 📚 Documentation | A | README, CLAUDE.md, GitHub Pages site, this report + SBOM |
 | ⚖️ Licensing | A | MIT |
-| 🤖 CI/CD | C | No automated pipeline yet (tests/build run locally) |
+| 🤖 CI/CD | A | pytest + frontend/docker build on push & PR (GitHub Actions) |
 
 ## Metrics
 
 | Metric | Value |
 |--------|-------|
-| SBOM components (declared) | 17 |
+| SBOM components (declared) | 72 |
 | Python deps (direct) | 9 |
 | npm deps (direct) | 3 |
 | Recipes in library | 56 |
 | App source lines (py/ts/tsx) | 1852 |
 | Open Dependabot alerts | 0 |
-| Tests | 15 passed in 0.78s |
+| Tests | 15 passed in 1.09s |
 
 ## Artifacts
 
@@ -40,6 +40,6 @@ gate yet.
 
 ## Recommended next steps
 
-1. Add a GitHub Actions workflow to run `pytest` + `docker build` on every PR.
-2. Add test coverage reporting and a minimum threshold.
-3. Commit a `package-lock.json` so the SBOM captures transitive npm deps.
+1. Add test-coverage reporting and a minimum threshold to CI.
+2. Add end-to-end tests for the plan → shopping-list flow.
+3. Build the pro-tier assisted cart-fill (Claude browser extension).
