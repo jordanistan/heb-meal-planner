@@ -27,6 +27,7 @@ class PlanRequest:
     anchor_meal_ids: list[str] | None = None
     pantry_exclude: list[str] | None = None
     budget: float | None = None
+    fulfillment: str = "pickup"
 
 
 def _scale(quantity: float, base_servings: int, household_size: int) -> float:
@@ -153,6 +154,7 @@ def generate_plan(req: PlanRequest) -> dict:
         "generated_at": now.isoformat(timespec="seconds"),
         "household_size": req.household_size,
         "meal_types": [t for t in (req.meal_types or []) if t] or ["dinner"],
+        "fulfillment": "delivery" if req.fulfillment == "delivery" else "pickup",
         "meals": list(meal_counts.values()),
         "shopping_list": shopping_list,
         "estimated_total": estimated_total,

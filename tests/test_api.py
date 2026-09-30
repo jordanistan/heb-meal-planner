@@ -38,6 +38,16 @@ def test_recipe_steps_404_for_unknown():
     assert client.get("/recipes/not-a-recipe/steps").status_code == 404
 
 
+def test_plan_delivery_fulfillment():
+    r = client.post(
+        "/plans",
+        json={"household_size": 2, "meal_types": ["dinner"], "budget": 1,
+              "anchor_meal_ids": ["greek-bowls"], "fulfillment": "delivery"},
+    )
+    assert r.status_code == 200, r.text
+    assert r.json()["fulfillment"] == "delivery"
+
+
 def test_coupons_endpoint():
     r = client.get("/coupons")
     assert r.status_code == 200
@@ -62,6 +72,7 @@ def test_create_and_fetch_plan():
     assert sum(m["count"] for m in plan["meals"]) == 2
     assert plan["shopping_list"]
     assert plan["estimated_total"] > 0
+    assert plan["fulfillment"] == "pickup"
 
     got = client.get(f"/plans/{plan['id']}")
     assert got.status_code == 200

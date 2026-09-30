@@ -17,6 +17,7 @@ class PlanRequestIn(BaseModel):
     )
     pantry_exclude: list[str] | None = None
     budget: float | None = Field(None, ge=0, description="Target weekly spend, USD")
+    fulfillment: str = Field("pickup", description="pickup | delivery")
     household_id: int | None = None
 
 
@@ -52,6 +53,7 @@ class PlanOut(BaseModel):
     generated_at: str
     household_size: int
     meal_types: list[str]
+    fulfillment: str
     meals: list[Meal]
     shopping_list: list[ShoppingItem]
     estimated_total: float

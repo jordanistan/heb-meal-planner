@@ -65,6 +65,19 @@ Request flow: `app/main.py` (FastAPI + lifespan that calls `init_db`) →
   managed DB in prod), the API Deployment + Service + HPA (2–10 on CPU), and the
   catalog CronJob. Set `image:` in `k8s/api.yaml` to your registry before applying.
 
+## Roadmap / planned features
+
+- **Pro account — assisted cart-fill (v2).** Use a user's own API key + Claude's
+  browser extension to log into heb.com in *their* browser and add the plan's
+  items to the cart, stopping before payment (never auto-pay). This keeps all
+  H-E-B interaction client-side/residential (see the Hard rule) and is the paid
+  tier's headline feature. Not built yet.
+- **Fulfillment (done, v1):** each plan carries `fulfillment` = pickup | delivery
+  (`PlanRequestIn.fulfillment` → `PlanOut.fulfillment`). Currently informational;
+  a delivery fee / order-min model can hang off it later.
+- Real catalog prices + real weekly-ad coupons via a licensed/partner feed
+  (pricing.py and coupons.py are sample data today).
+
 ## Conventions & gotchas
 
 - Adding a `jobs`-style column or model means editing `models.py`; there are no

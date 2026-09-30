@@ -109,6 +109,7 @@ def create_plan(body: PlanRequestIn, db: Session = Depends(get_db)) -> PlanOut:
             anchor_meal_ids=body.anchor_meal_ids,
             pantry_exclude=body.pantry_exclude,
             budget=body.budget,
+            fulfillment=body.fulfillment,
         )
     )
     if not plan["meals"]:

@@ -29,6 +29,7 @@ type Plan = {
   week: string;
   household_size: number;
   meal_types: string[];
+  fulfillment: string;
   meals: Meal[];
   shopping_list: ShoppingItem[];
   estimated_total: number;
@@ -61,6 +62,7 @@ export default function Home() {
   const [mealTypes, setMealTypes] = useState<Set<string>>(new Set(["lunch", "dinner"]));
   const [diet, setDiet] = useState("");
   const [budget, setBudget] = useState("");
+  const [fulfillment, setFulfillment] = useState("pickup");
   const [cuisines, setCuisines] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState("");
   const [plan, setPlan] = useState<Plan | null>(null);
@@ -168,6 +170,7 @@ export default function Home() {
           meal_types: mealTypes.size ? Array.from(mealTypes) : ["dinner"],
           diet: diet || null,
           budget: budget ? Number(budget) : null,
+          fulfillment,
           cuisines: cuisines.size ? Array.from(cuisines) : null,
           anchor_meal_ids: anchors.size ? Array.from(anchors) : null,
         }),
@@ -251,6 +254,20 @@ export default function Home() {
                 type="button"
               >
                 {t}
+              </button>
+            ))}
+          </div>
+
+          <h3>Fulfillment</h3>
+          <div className="chips">
+            {["pickup", "delivery"].map((f) => (
+              <button
+                key={f}
+                className={fulfillment === f ? "chip on" : "chip"}
+                onClick={() => setFulfillment(f)}
+                type="button"
+              >
+                {f}
               </button>
             ))}
           </div>
@@ -359,7 +376,7 @@ export default function Home() {
               <p className="estNote">
                 Estimated cart total · {plan.household_size} people ·{" "}
                 {plan.meal_types.join(" + ")} · {plan.meals.reduce((n, m) => n + m.count, 0)}{" "}
-                meals. Prices are estimates.
+                meals · for {plan.fulfillment}. Prices are estimates.
               </p>
 
               {plan.coupons.length > 0 && (
