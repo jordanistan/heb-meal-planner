@@ -37,17 +37,18 @@ async function proxy(req: NextRequest, path: string[]): Promise<Response> {
   }
 }
 
-type Ctx = { params: { path: string[] } };
+// Next 15: route-handler params are async.
+type Ctx = { params: Promise<{ path: string[] }> };
 
-export function GET(req: NextRequest, { params }: Ctx) {
-  return proxy(req, params.path);
+export async function GET(req: NextRequest, { params }: Ctx) {
+  return proxy(req, (await params).path);
 }
-export function POST(req: NextRequest, { params }: Ctx) {
-  return proxy(req, params.path);
+export async function POST(req: NextRequest, { params }: Ctx) {
+  return proxy(req, (await params).path);
 }
-export function PUT(req: NextRequest, { params }: Ctx) {
-  return proxy(req, params.path);
+export async function PUT(req: NextRequest, { params }: Ctx) {
+  return proxy(req, (await params).path);
 }
-export function DELETE(req: NextRequest, { params }: Ctx) {
-  return proxy(req, params.path);
+export async function DELETE(req: NextRequest, { params }: Ctx) {
+  return proxy(req, (await params).path);
 }
