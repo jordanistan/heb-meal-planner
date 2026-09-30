@@ -1,8 +1,8 @@
 # Multi-stage build producing Next.js "standalone" output for a small image.
 FROM node:20-alpine AS builder
 WORKDIR /app
-COPY package.json package-lock.json* ./
-RUN npm install
+COPY package.json package-lock.json ./
+RUN npm ci
 COPY . .
 RUN npm run build
 
