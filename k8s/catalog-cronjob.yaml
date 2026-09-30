@@ -1,0 +1,24 @@
+# Catalog refresh runs on a schedule, independent of user traffic.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: heb-catalog
+  namespace: heb
+spec:
+  schedule: "17 6 * * *" # daily, 06:17
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: catalog
+              image: heb-api:latest
+              imagePullPolicy: IfNotPresent
+              command: ["python", "-m", "app.worker.catalog"]
+              envFrom:
+                - configMapRef:
+                    name: heb-config
+                - secretRef:
+                    name: heb-db

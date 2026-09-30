@@ -1,0 +1,60 @@
+# Postgres for demo/staging. Production would use a managed database
+# (RDS / Cloud SQL) instead of running Postgres in-cluster.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: heb-db-data
+  namespace: heb
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: heb-db
+  namespace: heb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: heb-db
+  template:
+    metadata:
+      labels:
+        app: heb-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          envFrom:
+            - secretRef:
+                name: heb-db
+          ports:
+            - containerPort: 5432
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "heb", "-d", "heb"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: heb-db-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: heb-db
+  namespace: heb
+spec:
+  selector:
+    app: heb-db
+  ports:
+    - port: 5432
+      targetPort: 5432

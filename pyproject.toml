@@ -1,0 +1,9 @@
+[project]
+name = "heb-meal-planner"
+version = "0.1.0"
+description = "HEB Family Meal Planner — SaaS backend (v1)"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

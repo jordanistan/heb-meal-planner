@@ -1,0 +1,63 @@
+services:
+  api:
+    build: .
+    container_name: heb-api
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      DATABASE_URL: postgresql+psycopg://heb:heb@db:5432/heb
+      ENVIRONMENT: development
+      # ANTHROPIC_API_KEY: set to enable Claude plan generation (optional)
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: ./frontend
+    container_name: heb-web
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      # Server-side proxy target (internal Docker network name).
+      API_INTERNAL_URL: http://api:8000
+    depends_on:
+      - api
+
+  db:
+    image: postgres:16-alpine
+    container_name: heb-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: heb
+      POSTGRES_PASSWORD: heb
+      POSTGRES_DB: heb
+    volumes:
+      - heb_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U heb -d heb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Catalog refresh worker. Not started by default; run on demand:
+  #   docker compose run --rm catalog
+  # In production this is a Kubernetes CronJob (see k8s/catalog-cronjob.yaml).
+  catalog:
+    build: .
+    profiles: ["worker"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://heb:heb@db:5432/heb
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["python", "-m", "app.worker.catalog"]
+
+volumes:
+  heb_pgdata:

@@ -1,0 +1,22 @@
+# Non-secret config + the DB secret. In real clusters, manage the Secret with a
+# sealed-secrets / external-secrets operator rather than committing it.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: heb-config
+  namespace: heb
+data:
+  ENVIRONMENT: "production"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: heb-db
+  namespace: heb
+type: Opaque
+stringData:
+  # Points at the in-cluster Postgres Service below.
+  DATABASE_URL: "postgresql+psycopg://heb:heb@heb-db:5432/heb"
+  POSTGRES_USER: "heb"
+  POSTGRES_PASSWORD: "heb"
+  POSTGRES_DB: "heb"

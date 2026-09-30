@@ -1,0 +1,79 @@
+# Stateless API — the piece that scales. Bump replicas or attach an HPA.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: heb-api
+  namespace: heb
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: heb-api
+  template:
+    metadata:
+      labels:
+        app: heb-api
+    spec:
+      containers:
+        - name: api
+          # Replace with your registry image, e.g. registry.example.com/heb-api:1.0
+          image: heb-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: heb-config
+            - secretRef:
+                name: heb-db
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: heb-api
+  namespace: heb
+spec:
+  selector:
+    app: heb-api
+  ports:
+    - port: 80
+      targetPort: 8000
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: heb-api
+  namespace: heb
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: heb-api
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
