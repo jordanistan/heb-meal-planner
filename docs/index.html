@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HEB Meal Planner — plan your week in H-E-B's language</title>
+<meta name="description" content="Plan your family's week, get one consolidated H-E-B shopping list mapped to real products and private-label brands, on budget.">
+<style>
+  :root{
+    --red:#e2231a; --ink:#16181d; --muted:#5b6472; --line:#e6e8ec;
+    --bg:#ffffff; --soft:#f6f7f9; --tint:#fdecea; --good:#1a7f37;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --red:#ff6a61; --ink:#e8eaed; --muted:#9aa0aa; --line:#2b2f38;
+      --bg:#0f1115; --soft:#151922; --tint:#37211f; --good:#4ade80; }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.6}
+  a{color:var(--red)}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px}
+  .btn{display:inline-block;background:var(--red);color:#fff;text-decoration:none;
+    font-weight:600;padding:12px 22px;border-radius:10px;margin:6px 8px 6px 0}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+  header.hero{padding:72px 0 48px;text-align:center;
+    background:radial-gradient(1200px 400px at 50% -50%, var(--tint), transparent)}
+  .badge{display:inline-block;font-size:12px;font-weight:600;color:var(--red);
+    background:var(--tint);border-radius:999px;padding:5px 12px;margin-bottom:18px;
+    text-transform:uppercase;letter-spacing:.06em}
+  h1{font-size:44px;line-height:1.1;margin:0 0 14px}
+  h1 .k{color:var(--red)}
+  .lead{font-size:19px;color:var(--muted);max-width:620px;margin:0 auto 26px}
+  section{padding:44px 0;border-top:1px solid var(--line)}
+  h2{font-size:26px;margin:0 0 8px}
+  .sub{color:var(--muted);margin:0 0 26px}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media (max-width:760px){.grid{grid-template-columns:1fr}h1{font-size:34px}}
+  .card{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .card .ico{font-size:24px}
+  .card h3{margin:8px 0 4px;font-size:16px}
+  .card p{margin:0;color:var(--muted);font-size:14px}
+  pre{background:var(--soft);border:1px solid var(--line);border-radius:12px;
+    padding:16px 18px;overflow:auto;font-size:14px}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  ol.steps{padding-left:0;list-style:none;counter-reset:s}
+  ol.steps li{counter-increment:s;padding:10px 0 10px 44px;position:relative;border-bottom:1px solid var(--line)}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:8px;
+    width:28px;height:28px;border-radius:50%;background:var(--red);color:#fff;
+    display:grid;place-items:center;font-weight:700;font-size:14px}
+  .stack{display:flex;flex-wrap:wrap;gap:8px}
+  .pill{font-size:13px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;color:var(--muted)}
+  .note{background:var(--tint);border-radius:12px;padding:14px 18px;color:var(--ink);font-size:14px}
+  footer{padding:40px 0 60px;color:var(--muted);font-size:13px;text-align:center;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="badge">Open source · Texas · H-E-B</span>
+    <h1>Plan your week in <span class="k">H-E-B's</span> language.</h1>
+    <p class="lead">Pick the meals your family loves. Get one consolidated shopping
+      list mapped to real H-E-B products and private-label brands — on budget,
+      with this week's coupons.</p>
+    <a class="btn" href="https://github.com/jordanistan/heb-meal-planner">⭐ View on GitHub</a>
+    <a class="btn ghost" href="#run">How to run it</a>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>What it does</h2>
+    <p class="sub">Built for families who already shop at H-E-B — not another generic recipe app.</p>
+    <div class="grid">
+      <div class="card"><div class="ico">🍽️</div><h3>56 recipes, 10 cuisines</h3><p>Mediterranean, Mexican, Tex-Mex, Italian, Asian, Indian, American, Southern, Cajun, breakfast.</p></div>
+      <div class="card"><div class="ico">🎯</div><h3>Anchor meals</h3><p>Lock in your go-to dinners; the week auto-fills around them.</p></div>
+      <div class="card"><div class="ico">🏷️</div><h3>Brand intelligence</h3><p><code>skirt steak</code> → <em>Mi Tienda Fajitas</em>. <code>feta</code> → <em>Central Market</em>.</p></div>
+      <div class="card"><div class="ico">🧾</div><h3>Consolidated list</h3><p>2 limes + 3 limes = 5, grouped by store department, deep-linked to heb.com.</p></div>
+      <div class="card"><div class="ico">💵</div><h3>Budget mode</h3><p>"I want to spend $X" and the plan fits, with estimated costs.</p></div>
+      <div class="card"><div class="ico">🎟️</div><h3>Weekly coupons</h3><p>Deals that match your list, with estimated savings.</p></div>
+      <div class="card"><div class="ico">🥗</div><h3>Diet & protein filters</h3><p>Vegetarian, vegan, gluten-free, pescatarian, or "chicken only."</p></div>
+      <div class="card"><div class="ico">🚚</div><h3>Pickup or delivery</h3><p>Choose how you want the order fulfilled.</p></div>
+      <div class="card"><div class="ico">🌙</div><h3>Dark mode</h3><p>Because of course.</p></div>
+    </div>
+    <p class="note" style="margin-top:22px">🔒 <strong>Privacy by design:</strong>
+      the "buy" step is a deep link <em>your own browser</em> follows to heb.com.
+      The app never scrapes or automates H-E-B from its servers.</p>
+  </div>
+</section>
+
+<section id="run">
+  <div class="wrap">
+    <h2>Run it in one command</h2>
+    <p class="sub">The whole stack — web, API, and Postgres — via Docker Compose.</p>
+    <pre><code>git clone https://github.com/jordanistan/heb-meal-planner.git
+cd heb-meal-planner
+docker compose up -d --build</code></pre>
+    <ol class="steps">
+      <li>Open <a href="http://localhost:3000">localhost:3000</a> — the app.</li>
+      <li>Pick a diet/protein, cuisines, and your anchor meals.</li>
+      <li>Set a budget (optional) and hit <strong>Generate plan</strong>.</li>
+      <li>Tap <strong>Find →</strong> on any item to open it on heb.com.</li>
+    </ol>
+    <p class="sub" style="margin-top:20px">Prefer no Docker? See the
+      <a href="https://github.com/jordanistan/heb-meal-planner#run-without-docker">local dev steps</a>.
+      Want AI-generated cooking steps? Add an <code>ANTHROPIC_API_KEY</code>.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Built with</h2>
+    <p class="sub">A clean, containerized stack that scales.</p>
+    <div class="stack">
+      <span class="pill">FastAPI</span><span class="pill">Next.js</span>
+      <span class="pill">PostgreSQL</span><span class="pill">Docker Compose</span>
+      <span class="pill">Kubernetes (HPA + CronJob)</span><span class="pill">Claude API</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Roadmap</h2>
+    <p class="sub">Where it's headed.</p>
+    <div class="grid">
+      <div class="card"><h3>🤖 Pro: assisted cart-fill</h3><p>Your API key + Claude's browser extension load your cart on heb.com — stopping before payment.</p></div>
+      <div class="card"><h3>💲 Real prices & coupons</h3><p>Live catalog and weekly-ad data via a partner feed.</p></div>
+      <div class="card"><h3>🛒 Multi-retailer</h3><p>Beyond H-E-B over time.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>MIT licensed · <a href="https://github.com/jordanistan/heb-meal-planner">github.com/jordanistan/heb-meal-planner</a></p>
+    <p>Not affiliated with or endorsed by H-E-B. "H-E-B", "Mi Tienda", and
+      "Central Market" are trademarks of their respective owner, referenced only
+      to map shopping queries. Prices and coupons shown in the app are estimates/samples.</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,64 +1,117 @@
-# HEB Family Meal Planner — SaaS backend (v1)
+<h1 align="center">🛒 HEB Meal Planner</h1>
 
-A privacy-first meal-planning SaaS for Texas H-E-B families. Families set their
-**anchor meals** and dietary lane; the service builds a weekly plan, consolidates
-the ingredients, and maps each one to a real H-E-B product — favoring private
-labels (Mi Tienda, Central Market, H-E-B Organics). The "buy" step is a
-**deep link** the user's own browser follows to heb.com, so no automation or
-scraping ever runs on our servers.
+<p align="center">
+  <em>Plan your family's week in H-E-B's own language — pick the meals you love,
+  get one consolidated shopping list mapped to real H-E-B products, on budget.</em>
+</p>
 
-See the full product & architecture plan: the "HEB Family Meal Planner — SaaS Plan" doc.
+<p align="center">
+  <img alt="Python" src="https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white">
+  <img alt="FastAPI" src="https://img.shields.io/badge/API-FastAPI-009688?logo=fastapi&logoColor=white">
+  <img alt="Next.js" src="https://img.shields.io/badge/Web-Next.js-000000?logo=nextdotjs&logoColor=white">
+  <img alt="Docker" src="https://img.shields.io/badge/Run-Docker%20Compose-2496ED?logo=docker&logoColor=white">
+  <img alt="Kubernetes" src="https://img.shields.io/badge/Scale-Kubernetes-326CE5?logo=kubernetes&logoColor=white">
+  <img alt="License" src="https://img.shields.io/badge/License-MIT-green">
+</p>
 
-## Architecture (v1)
+---
 
-- **FastAPI** backend (`app/`) — stateless, scales horizontally.
-- **PostgreSQL** — households and generated plans.
-- **Planning core** (`app/planning/`) — recipe library, brand mapping, and the
-  consolidation logic. Deterministic; no LLM required for v1.
-- **Catalog worker** (`app/worker/`) — scheduled refresh, decoupled from user traffic.
-- Packaged as one Docker image; **Docker Compose** for local dev, **Kubernetes**
-  (`k8s/`) for production scaling.
+## What is this?
 
-## Run locally (Docker)
+Most meal-plan apps hand you recipes and a generic list. **HEB Meal Planner** is
+built for Texas families who already shop at H-E-B: it plans the week around your
+**anchor meals** and diet, then turns every ingredient into the *right H-E-B
+product* — favoring private labels like **Mi Tienda**, **Central Market**, and
+**H-E-B Organics** — with a one-tap deep link to buy.
+
+- 🍽️ **56 recipes across 10 cuisines** — Mediterranean, Mexican, Tex-Mex, Italian, Asian, Indian, American, Southern, Cajun, Breakfast.
+- 🎯 **Anchor meals + smart auto-fill** — lock in your go-to dinners, we fill the rest of the week.
+- 🧾 **Consolidated shopping list** — "2 limes + 3 limes = 5 limes," grouped by store department.
+- 🏷️ **H-E-B brand intelligence** — maps `skirt steak` → *Mi Tienda Seasoned Beef Fajitas*, `feta` → *Central Market Greek Feta*.
+- 💵 **Budget mode** — "I want to spend $X" and the plan fits.
+- 🎟️ **Weekly-ad coupons** — deals on your list, with estimated savings.
+- 🥗 **Diet & protein filters** — vegetarian, vegan, gluten-free, pescatarian, or "chicken only."
+- 🚚 **Pickup or delivery.**
+- 🌙 **Dark mode.**
+- 🤖 **Claude-powered cooking steps** (optional, bring your own API key).
+
+> **Privacy by design:** the "buy" step is a deep link your *own* browser follows
+> to heb.com. The app never scrapes or automates H-E-B from its servers.
+
+---
+
+## Quick start (Docker)
+
+The whole stack — API, web, and Postgres — comes up with one command.
 
 ```bash
-docker compose up -d --build        # API on http://127.0.0.1:8000
-curl http://127.0.0.1:8000/health   # {"status":"ok","database":true}
-open http://127.0.0.1:8000/docs     # interactive API docs
+git clone https://github.com/jordanistan/heb-meal-planner.git
+cd heb-meal-planner
+docker compose up -d --build
 ```
 
-Generate a plan:
+Then open:
+
+| URL | What |
+|-----|------|
+| **http://localhost:3000** | 🖥️ The app |
+| http://localhost:8000/docs | 🔌 API (Swagger) |
+
+Stop it with `docker compose down` (add `-v` to wipe the database).
+
+### Optional: Claude cooking steps
+
+Add an Anthropic API key and restart the API to enable generated recipe steps:
 
 ```bash
-curl -X POST http://127.0.0.1:8000/plans -H 'Content-Type: application/json' -d '{
-  "household_size": 4,
-  "days": 3,
-  "anchor_meal_ids": ["beef-fajitas", "chicken-tacos"],
-  "cuisines": ["tex-mex", "mexican"]
-}'
+echo "ANTHROPIC_API_KEY=sk-ant-..." >> .env
+docker compose up -d api
 ```
 
-Run the catalog worker once: `docker compose run --rm catalog`.
-Tear down: `docker compose down` (add `-v` to drop the database volume).
-
-## Run without Docker
+### Run without Docker
 
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-uvicorn app.main:app --reload     # uses SQLite (dev.db) by default
-pytest -q                         # run the test suite
+uvicorn app.main:app --reload      # API on :8000 (SQLite by default)
+pytest -q                          # 15 tests
+
+cd frontend && npm install && npm run dev   # web on :3000
 ```
 
-## Endpoints
+---
+
+## How it works
+
+```
+Your browser ──▶ Next.js web  ──▶ FastAPI API ──▶ Claude API (optional steps)
+      │                                  │
+      │                                  └──▶ PostgreSQL (plans, households, cache)
+      │                                  └──▶ Catalog worker (scheduled)
+      └───────────────▶ heb.com   (deep links — your session, never our servers)
+```
+
+- **`app/planning/`** — the brains: recipe library, brand mapping, consolidation, pricing, coupons. Pure Python, no web/DB deps.
+- **`app/`** — FastAPI service (stateless, scales horizontally).
+- **`frontend/`** — Next.js app; proxies to the API server-side.
+- **`k8s/`** — production manifests: API `Deployment` + `HorizontalPodAutoscaler`, Postgres, and a catalog `CronJob`.
+
+See [`CLAUDE.md`](./CLAUDE.md) for the full architecture and conventions.
+
+---
+
+## API at a glance
 
 | Method | Path | Purpose |
-|---|---|---|
-| GET | `/health` | Liveness + DB check (probes) |
-| GET | `/recipes` | Recipe library (pick anchor meals) |
-| POST | `/plans` | Generate + store a weekly plan and shopping list |
-| GET | `/plans/{id}` | Fetch a stored plan |
-| GET | `/docs` | OpenAPI / Swagger UI |
+|--------|------|---------|
+| `GET` | `/health` | Liveness + DB check |
+| `GET` | `/recipes` | Recipe library (with ingredients) |
+| `GET` | `/recipes/{id}/steps` | Claude-generated cooking steps (cached) |
+| `GET` | `/coupons` | This week's ad coupons |
+| `POST` | `/plans` | Generate a weekly plan + shopping list |
+| `GET` | `/plans/{id}` | Fetch a saved plan |
+
+---
 
 ## Deploy to Kubernetes
 
@@ -67,13 +120,26 @@ kubectl apply -f k8s/namespace.yaml
 kubectl apply -f k8s/config.yaml -f k8s/postgres.yaml -f k8s/api.yaml -f k8s/catalog-cronjob.yaml
 ```
 
-The API `Deployment` has an `HorizontalPodAutoscaler` (2–10 replicas on CPU);
-the catalog refresh runs as a `CronJob`. Push the image to your registry and set
-`image:` in `k8s/api.yaml` first. In production, use a managed database instead
-of the in-cluster Postgres, and manage the DB `Secret` with a secrets operator.
+Push the image to your registry and set `image:` in `k8s/api.yaml` first. Use a
+managed database in production instead of the in-cluster Postgres.
 
-## Configuration
+---
 
-All config is via environment variables (see `.env.example`): `DATABASE_URL`
-(defaults to SQLite locally; Postgres in Compose/k8s), and the optional
-`ANTHROPIC_API_KEY` / `ANTHROPIC_MODEL` to enable Claude-generated plans later.
+## Roadmap
+
+- **Pro tier — assisted cart-fill:** your API key + Claude's browser extension log into heb.com *in your browser* and load the cart, stopping before payment.
+- Real catalog prices & live weekly-ad coupons via a partner feed (today's are estimates/samples).
+- Multi-retailer support.
+
+---
+
+## Status & disclaimer
+
+v1 / MVP. Prices and coupons are **sample/estimated data**, not live H-E-B
+pricing. Not affiliated with or endorsed by H-E-B; "H-E-B", "Mi Tienda", and
+"Central Market" are trademarks of their respective owner and are referenced
+here only to map shopping queries.
+
+## License
+
+[MIT](./LICENSE)
