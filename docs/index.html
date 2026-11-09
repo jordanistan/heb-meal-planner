@@ -51,6 +51,14 @@
   .stack{display:flex;flex-wrap:wrap;gap:8px}
   .pill{font-size:13px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;color:var(--muted)}
   .note{background:var(--tint);border-radius:12px;padding:14px 18px;color:var(--ink);font-size:14px}
+  .tour video{display:block;width:100%;height:auto;background:#000;border:1px solid var(--line);border-radius:12px}
+  .shots{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:30px}
+  @media (max-width:760px){.shots{grid-template-columns:1fr}}
+  .shots figure{margin:0}
+  .shots a{display:block}
+  .shots img{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;object-position:top;
+    border:1px solid var(--line);border-radius:10px}
+  .shots figcaption{margin-top:8px;font-size:14px;font-weight:600}
   footer{padding:40px 0 60px;color:var(--muted);font-size:13px;text-align:center;border-top:1px solid var(--line)}
 </style>
 </head>
@@ -63,17 +71,40 @@
     <p class="lead">Pick the meals your family loves. Get one consolidated shopping
       list mapped to real H-E-B products and private-label brands — on budget,
       with this week's coupons.</p>
-    <a class="btn" href="https://github.com/jordanistan/heb-meal-planner">⭐ View on GitHub</a>
-    <a class="btn ghost" href="#run">How to run it</a>
+    <a class="btn" href="#tour">▶ Watch the 90-second tour</a>
+    <a class="btn ghost" href="https://github.com/jordanistan/heb-meal-planner">View on GitHub</a>
   </div>
 </header>
+
+<section id="tour" class="tour">
+  <div class="wrap">
+    <h2>See it running</h2>
+    <p class="sub">Nothing to install. This is a recording of the working app, following one family through a week.</p>
+    <video controls playsinline preload="metadata" poster="demo/video-poster.jpg" width="1920" height="1080">
+      <source src="demo/tour.mp4" type="video/mp4">
+      <a href="demo/tour.mp4">Download the tour video</a>
+    </video>
+    <p class="note" style="margin-top:16px">The video has captions and no sound. The family, food log, prices and deals are all sample data.</p>
+
+    <div class="shots">
+      <figure><a href="demo/04-meals-picked.png"><img loading="lazy" src="demo/04-meals-picked.png" alt="Meal cards with seven meals selected for the week"></a><figcaption>Choose your meals</figcaption></figure>
+      <figure><a href="demo/05-plan.png"><img loading="lazy" src="demo/05-plan.png" alt="Generated plan showing estimated total, budget status, deals and meals"></a><figcaption>Get the week's plan and cost</figcaption></figure>
+      <figure><a href="demo/06-shopping-list.png"><img loading="lazy" src="demo/06-shopping-list.png" alt="Shopping list grouped by store department with brands and prices"></a><figcaption>One shopping list, by department</figcaption></figure>
+      <figure><a href="demo/03-recipe.png"><img loading="lazy" src="demo/03-recipe.png" alt="Recipe window with nutrition facts and ingredients"></a><figcaption>Full recipe with nutrition facts</figcaption></figure>
+      <figure><a href="demo/07-week-schedule.png"><img loading="lazy" src="demo/07-week-schedule.png" alt="Sunday to Saturday dinner schedule"></a><figcaption>Sunday–Saturday schedule</figcaption></figure>
+      <figure><a href="demo/08-food-log.png"><img loading="lazy" src="demo/08-food-log.png" alt="Food log history with daily calories against a goal"></a><figcaption>Food log with a calorie goal</figcaption></figure>
+      <figure><a href="demo/09-doctor-report.png"><img loading="lazy" src="demo/09-doctor-report.png" alt="Printable nutrition report with summary figures and charts"></a><figcaption>Report to share with a doctor</figcaption></figure>
+      <figure><a href="demo/10-dark-mode.png"><img loading="lazy" src="demo/10-dark-mode.png" alt="The planner in dark mode"></a><figcaption>Dark mode</figcaption></figure>
+    </div>
+  </div>
+</section>
 
 <section>
   <div class="wrap">
     <h2>What it does</h2>
     <p class="sub">Built for families who already shop at H-E-B — not another generic recipe app.</p>
     <div class="grid">
-      <div class="card"><div class="ico">🍽️</div><h3>56 recipes, 10 cuisines</h3><p>Mediterranean, Mexican, Tex-Mex, Italian, Asian, Indian, American, Southern, Cajun, breakfast.</p></div>
+      <div class="card"><div class="ico">🍽️</div><h3>175 recipes, 10 cuisines</h3><p>Mediterranean, Mexican, Tex-Mex, Italian, Asian, Indian, American, Southern, Cajun, breakfast.</p></div>
       <div class="card"><div class="ico">🎯</div><h3>Anchor meals</h3><p>Lock in your go-to dinners; the week auto-fills around them.</p></div>
       <div class="card"><div class="ico">🏷️</div><h3>Brand intelligence</h3><p><code>skirt steak</code> → <em>Mi Tienda Fajitas</em>. <code>feta</code> → <em>Central Market</em>.</p></div>
       <div class="card"><div class="ico">🧾</div><h3>Consolidated list</h3><p>2 limes + 3 limes = 5, grouped by store department, deep-linked to heb.com.</p></div>
