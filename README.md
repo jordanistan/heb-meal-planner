@@ -18,7 +18,7 @@
 
 ## See it running
 
-**[▶ Watch the 90-second tour](https://jordanistan.github.io/heb-meal-planner/#tour)** (no install needed)
+**[Try the live demo](https://jordanistan.github.io/heb-meal-planner/app/)** or **[▶ watch the 90-second tour](https://jordanistan.github.io/heb-meal-planner/#tour)**. No install needed.
 
 [![Video tour of HEB Meal Planner](docs/demo/video-poster.jpg)](https://jordanistan.github.io/heb-meal-planner/#tour)
 
